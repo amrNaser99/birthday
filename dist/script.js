@@ -27,7 +27,6 @@ const gateStart = document.querySelector('#gateStart');
 const gateReady = document.querySelector('#gateReady');
 const playVoiceButton = document.querySelector('#playVoiceButton');
 const voiceStatus = document.querySelector('#voiceStatus');
-const birthdaySong = document.querySelector('#birthdaySong');
 const voiceMessage = document.querySelector('#voiceMessage');
 const experienceContent = [
   document.querySelector('.site-header'),
@@ -269,21 +268,6 @@ function stopFireworks() {
   partyConfetti.classList.remove('is-active');
 }
 
-function singBirthdayLyrics() {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const song = new SpeechSynthesisUtterance(
-    'Happy birthday to you. Happy birthday to you. Happy birthday dear Mona. Happy birthday to you.',
-  );
-  const voices = window.speechSynthesis.getVoices();
-  song.voice = voices.find((voice) => /en[-_](GB|US)/i.test(voice.lang)) || voices[0] || null;
-  song.lang = 'en-US';
-  song.volume = .2;
-  song.rate = .62;
-  song.pitch = 1.28;
-  window.speechSynthesis.speak(song);
-}
-
 function playSynthBirthday() {
   const context = getAudioContext();
   if (!context) return Promise.resolve();
@@ -338,25 +322,11 @@ function playSynthBirthday() {
     }, time * 1000);
   });
 
-  singBirthdayLyrics();
   return new Promise((resolve) => window.setTimeout(resolve, Math.max(0, (cursor - context.currentTime) * 1000 + 300)));
 }
 
 async function playBirthdaySong() {
-  const hasCustomSong = await assetExists('assets/happy-birthday-mona.mp3');
-  if (!hasCustomSong) {
-    await playSynthBirthday();
-    return;
-  }
-
-  birthdaySong.currentTime = 0;
-  birthdaySong.volume = .34;
-  try {
-    await birthdaySong.play();
-    await new Promise((resolve) => birthdaySong.addEventListener('ended', resolve, { once: true }));
-  } catch {
-    await playSynthBirthday();
-  }
+  await playSynthBirthday();
 }
 
 function playCountdownBeep(number) {
@@ -427,12 +397,15 @@ async function unlockSurprise() {
     return;
   }
 
-  // Warming both media elements after a gesture improves reliable playback later.
-  primeMedia(birthdaySong);
+  // Warm the personal recording after a gesture to improve playback later.
   primeMedia(voiceMessage);
 }
 
 async function startVoice() {
+  if (!await assetExists('assets/voice-message.mp3')) {
+    revealFilm();
+    return;
+  }
   voiceStatus.textContent = '';
   playVoiceButton.hidden = true;
   voiceMessage.currentTime = 0;
