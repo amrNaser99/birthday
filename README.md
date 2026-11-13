@@ -38,6 +38,6 @@ python -m http.server 8080 --directory dist
 
 ## الكارت
 
-صفحة الكارت موجودة في `dist/print-card.html`، والـQR النهائي في `dist/assets/qr-code.png`.
-
-لا تطبع الكارت قبل اختبار الرابط المنشور من هاتف خارج حساب المالك.
+صورة الكارت الجاهزة للطباعة بمقاس A6 ودقة 300 DPI: `QR-Card-Print-Cropped.png`، ونسخة PDF: `QR-Card-A6.pdf`.
+النسخة المصدرية في `dist/print-card.html`، ويمكن إعادة إنشاء الملفات بواسطة `scripts/generate-print-card.py`.
+الـQR على الكارت يفتح رابط الموقع المنشور مباشرة، ولا يكشف عن الفيلم قبل المفاجأة.
